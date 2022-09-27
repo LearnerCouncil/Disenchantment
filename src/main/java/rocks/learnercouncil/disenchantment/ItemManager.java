@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -94,10 +94,10 @@ public class ItemManager {
     private static ItemStack handleSpawnEggs(ItemStack i, Player p, boolean shulker) {
         net.minecraft.world.item.ItemStack nmsItem = getNMSItemStack(i);
         if(nmsItem == null) return i;
-        NBTTagCompound nbt = nmsItem.getOrCreateTag();
-        if(nbt.hasKey("EntityTag")) {
+        CompoundTag nbt = nmsItem.getOrCreateTag();
+        if(nbt.contains("EntityTag")) {
             displayMessage(i, p, shulker);
-            nbt.set("EntityTag", new NBTTagCompound());
+            nbt.put("EntityTag", new CompoundTag());
             nmsItem.setTag(nbt);
             ItemStack i2 = getBukkitItemStack(nmsItem);
             if(i2 == null) return i;
@@ -181,7 +181,7 @@ public class ItemManager {
         }
         net.minecraft.world.item.ItemStack nmsItem = getNMSItemStack(i);
         if(nmsItem == null) return;
-        NBTTagCompound nbt = nmsItem.getOrCreateTag();
+        CompoundTag nbt = nmsItem.getOrCreateTag();
         name.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(i.getType().toString().toLowerCase(), 1, ItemTag.ofNbt(nbt.toString()))));
         name.setColor(ChatColor.LIGHT_PURPLE);
 
@@ -199,8 +199,7 @@ public class ItemManager {
     }
 
     private static net.minecraft.world.item.ItemStack getNMSItemStack(ItemStack i) {
-        String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        String version = packageName.substring(packageName.lastIndexOf(".") + 1);
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
         try {
             Object nmsItem = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class).invoke(null, i);
@@ -209,13 +208,13 @@ public class ItemManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
+
         }
         return null;
     }
 
     private static ItemStack getBukkitItemStack(net.minecraft.world.item.ItemStack i) {
-        String packageName = Bukkit.getServer().getClass().getPackage().getName();
-        String version = packageName.substring(packageName.lastIndexOf(".") + 1);
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
         try {
             Object nmsItem = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack").getMethod("asBukkitCopy", net.minecraft.world.item.ItemStack.class).invoke(null, i);
@@ -230,6 +229,7 @@ public class ItemManager {
 
 
     private static final List<Material> SPAWN_EGGS = Arrays.asList(
+            ALLAY_SPAWN_EGG,
             AXOLOTL_SPAWN_EGG,
             BAT_SPAWN_EGG,
             BEE_SPAWN_EGG,
@@ -287,6 +287,7 @@ public class ItemManager {
             VEX_SPAWN_EGG,
             VILLAGER_SPAWN_EGG,
             VINDICATOR_SPAWN_EGG,
+            WARDEN_SPAWN_EGG,
             WANDERING_TRADER_SPAWN_EGG,
             WITCH_SPAWN_EGG,
             WITHER_SKELETON_SPAWN_EGG,
