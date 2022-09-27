@@ -1,0 +1,6 @@
+name: Disenchantment
+version: '${project.version}'
+main: rocks.learnercouncil.disenchantment.Disenchantment
+api-version: 1.17
+authors: [ h2ofiremaster ]
+description: A plugin made to midigate the smuggling of items into the server via saved hotbars
