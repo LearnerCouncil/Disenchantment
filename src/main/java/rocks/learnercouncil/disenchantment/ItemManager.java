@@ -28,8 +28,10 @@ public class ItemManager {
     public static ItemStack modify(ItemStack i, Player p, boolean shulker) {
         if(i.getType() == POTION || i.getType() == SPLASH_POTION || i.getType() == LINGERING_POTION || i.getType() == TIPPED_ARROW) {
             return handlePotions(i, p, shulker);
-        } else if(SPAWN_EGGS.contains(i.getType())){
+        } else if(SPAWN_EGGS.contains(i.getType())) {
             return handleSpawnEggs(i, p, shulker);
+        } else if(i.getType() == SPAWNER) {
+            return handleSpawners(i, p, shulker);
         } else if(i.getType() == BUNDLE) {
             return handleBundles(i, p, shulker);
         } else if(Tag.SHULKER_BOXES.isTagged(i.getType())) {
@@ -98,6 +100,25 @@ public class ItemManager {
         if(nbt.contains("EntityTag")) {
             displayMessage(i, p, shulker);
             nbt.put("EntityTag", new CompoundTag());
+            nmsItem.setTag(nbt);
+            ItemStack i2 = getBukkitItemStack(nmsItem);
+            if(i2 == null) return i;
+            ItemMeta im = i2.getItemMeta();
+            if(im == null) return i;
+            im.setLore(Collections.singletonList(ChatColor.LIGHT_PURPLE.toString() + ChatColor.ITALIC + "Disenchanted"));
+            i2.setItemMeta(im);
+            return i2;
+        }
+        return i;
+    }
+
+    private static ItemStack handleSpawners(ItemStack i, Player p, boolean shulker) {
+        net.minecraft.world.item.ItemStack nmsItem = getNMSItemStack(i);
+        if(nmsItem == null) return i;
+        CompoundTag nbt = nmsItem.getOrCreateTag();
+        if(nbt.contains("BlockEntityTag")) {
+            displayMessage(i, p, shulker);
+            nbt.put("BlockEntityTag", new CompoundTag());
             nmsItem.setTag(nbt);
             ItemStack i2 = getBukkitItemStack(nmsItem);
             if(i2 == null) return i;
